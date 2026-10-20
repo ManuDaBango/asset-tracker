@@ -6,6 +6,9 @@ import { processReport } from "./pipeline";
 import { parseReportInput, parsePhoto } from "./validate";
 import { resolveReview } from "./review";
 import path from "node:path";
+import { handleUpdate } from "./telegramBot";
+import { sendMessage } from "./telegram";
+import type { TelegramUpdate } from "./telegram";
 
 const app = express();
 // Render sits behind a proxy, so trust it. Otherwise every visitor looks like the same IP.
@@ -111,6 +114,28 @@ app.post("/api/review/:id/decision", requireReviewer, async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Could not save the decision" });
+  }
+});
+
+// Telegram delivers messages here. The secret header proves the call really came from Telegram.
+app.post("/telegram/webhook", async (req, res) => {
+  const expected = process.env.TELEGRAM_WEBHOOK_SECRET;
+  if (!expected || req.header("x-telegram-bot-api-secret-token") !== expected) {
+    res.sendStatus(401);
+    return;
+  }
+  // Answer straight away so Telegram does not resend the message, then do the work.
+  res.sendStatus(200);
+
+  const update = req.body as TelegramUpdate;
+  try {
+    await handleUpdate(update);
+  } catch (error) {
+    console.error("Could not handle update", update.update_id, error);
+    const chatId = update.message?.chat.id;
+    if (chatId !== undefined) {
+      await sendMessage(chatId, "Sorry, something went wrong on our side. Please try again shortly.").catch(() => {});
+    }
   }
 });
 

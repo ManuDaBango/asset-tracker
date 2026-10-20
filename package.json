@@ -9,6 +9,9 @@
     "dev": "tsx watch server/index.ts",
     "typecheck": "tsc --noEmit",
     "build": "npm --prefix client install --include=dev && npm --prefix client run build",
+    "telegram:webhook": "tsx server/telegram-webhook.ts set",
+    "telegram:unhook": "tsx server/telegram-webhook.ts delete",
+    "telegram:info": "tsx server/telegram-webhook.ts info",
     "start": "tsx server/index.ts"
   },
   "keywords": [],

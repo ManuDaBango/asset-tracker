@@ -1,3 +1,4 @@
+import rateLimit from "express-rate-limit";
 import "dotenv/config";
 import express from "express";
 import { fetchAssets, fetchReviewQueue } from "./airtable";
@@ -7,6 +8,22 @@ import { resolveReview } from "./review";
 import path from "node:path";
 
 const app = express();
+// Render sits behind a proxy, so trust it. Otherwise every visitor looks like the same IP.
+app.set("trust proxy", 1);
+
+const reportLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  limit: 20,
+  message: { error: "Too many reports from this connection. Please try again later." },
+});
+
+const reviewLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 60,
+  message: { error: "Too many requests. Please wait a few minutes." },
+});
+
+app.use("/api/review", reviewLimiter);
 app.use(express.json({ limit: "10mb" }));
 
 // req and res are the same idea as request and response, just shorter.
@@ -25,7 +42,7 @@ app.get("/api/assets", async (req, res) => {
   }
 });
 
-app.post("/api/reports", async (req, res) => {
+app.post("/api/reports", reportLimiter, async (req, res) => {
   const parsed = parseReportInput(req.body);
   if (!parsed.ok) {
     res.status(400).json({ error: parsed.error });

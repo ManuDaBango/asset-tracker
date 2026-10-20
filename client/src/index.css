@@ -1,0 +1,15 @@
+body { font-family: system-ui, sans-serif; margin: 0; background: #f6f6f4; }
+main { max-width: 520px; margin: 2rem auto; padding: 0 1rem; }
+label { display: block; margin-bottom: 1rem; font-weight: 600; }
+input, select, textarea { display: block; width: 100%; padding: 0.5rem; margin-top: 0.25rem; font: inherit; box-sizing: border-box; }
+button { padding: 0.6rem 1.2rem; font: inherit; cursor: pointer; }
+.ok { color: #067429; }
+.bad { color: #bd0a0a; }
+
+.card { border: 1px solid #999; border-radius: 8px; padding: 1rem; margin: 1rem 0; text-align: left; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.card dl { display: grid; grid-template-columns: max-content 1fr; gap: 0.25rem 0.75rem; margin: 0; }
+.card dt { font-weight: 600; }
+.card dd { margin: 0; }
+.card img { display: block; max-width: 240px; border-radius: 6px; margin: 0.75rem 0; }
+.dept { background: #fff3cd; color: #222; padding: 0.5rem 0.75rem; border-radius: 6px; }

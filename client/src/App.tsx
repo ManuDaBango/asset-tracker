@@ -95,6 +95,8 @@ export default function App() {
         matchedAssetId: data.matchedAssetId,
         wasMissing: data.wasMissing,
       });
+      // Tell the alt108 website (if it is showing this app in a frame) to refresh the register
+      window.parent.postMessage({ type: "asset-report-submitted" }, "*");
       setDescription("");
       setBarcode("");
       setAssetId("");

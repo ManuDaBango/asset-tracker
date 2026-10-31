@@ -26,7 +26,6 @@ type Item = {
   model?: string;
   miscSpec?: string;
   quantity?: number;
-  reportedStatus?: string;
   condition?: string;
   department?: string;
   reviewReason?: string;
@@ -79,7 +78,6 @@ function Card({ item, onDecide }: { item: Item; onDecide: (action: Action, note:
             <Row label="Model" value={item.model} />
             <Row label="Misc spec" value={item.miscSpec} />
             <Row label="Quantity" value={item.quantity} />
-            <Row label="Status" value={item.reportedStatus} />
             <Row label="Condition" value={item.condition} />
             <Row label="Department" value={item.department} />
           </dl>

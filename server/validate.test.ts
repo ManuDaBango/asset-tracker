@@ -15,7 +15,7 @@ test("new fields are trimmed and passed through", () => {
   const r = parseReportInput({
     ...base, assetId: "  AST-0001 ", brand: "Camisco", model: "IN24455",
     miscSpec: "Red, wheeled, closed lid", department: "Operations",
-    status: "Active", condition: "Good", quantity: 4,
+    condition: "Good", quantity: 4,
   });
   assert.equal(r.ok, true);
   if (r.ok) {
@@ -26,7 +26,7 @@ test("new fields are trimmed and passed through", () => {
 });
 
 test("blank dropdowns count as not provided", () => {
-  assert.equal(parseReportInput({ ...base, department: "", status: "" }).ok, true);
+  assert.equal(parseReportInput({ ...base, department: "" }).ok, true);
 });
 
 test("a department that is not on the list is rejected", () => {

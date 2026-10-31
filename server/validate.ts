@@ -1,4 +1,4 @@
-import { CHANNELS, ROLES, DEPARTMENTS, REPORTED_STATUSES, CONDITIONS } from "./types";
+import { CHANNELS, ROLES, DEPARTMENTS, CONDITIONS } from "./types";
 import type { Channel, ReporterRole, ReportInput, Photo, PhotoMediaType } from "./types";
 
 type ParseResult =
@@ -41,7 +41,7 @@ export function parseReportInput(body: unknown): ParseResult {
   const site = typeof b.site === "string" ? b.site.trim() : "";
   const description = typeof b.description === "string" ? b.description.trim() : "";
   if (!reporterName || !site || !description) {
-    return { ok: false, error: "reporterName, site and description are required" };
+    return { ok: false, error: "Please fill in your name, the site, and either a description of the asset (the box called Asset you are reporting) or a photo" };
   }
 
   const barcode = optionalText(b.barcode);
@@ -51,10 +51,6 @@ export function parseReportInput(body: unknown): ParseResult {
   const model = optionalText(b.model);
   const miscSpec = optionalText(b.miscSpec);
 
-  const status = optionalChoice(b.status, REPORTED_STATUSES);
-  if (!status.ok) {
-    return { ok: false, error: `status must be one of: ${REPORTED_STATUSES.join(", ")}` };
-  }
   const department = optionalChoice(b.department, DEPARTMENTS);
   if (!department.ok) {
     return { ok: false, error: `department must be one of: ${DEPARTMENTS.join(", ")}` };
@@ -76,7 +72,7 @@ export function parseReportInput(body: unknown): ParseResult {
     ok: true,
     value: {
       channel, reporterName, reporterRole, site, description,
-      barcode, assetId, status: status.value, quantity, category, brand, model, miscSpec,
+      barcode, assetId, quantity, category, brand, model, miscSpec,
       department: department.value, condition: condition.value,
     },
   };

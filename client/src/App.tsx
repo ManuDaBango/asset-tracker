@@ -4,8 +4,7 @@ import type { FormEvent } from "react";
 const ROLES = ["Employee", "Auditor", "Client"] as const;
 type Role = (typeof ROLES)[number];
 const DEPARTMENTS = ["Operations", "Finance", "Workshop", "IT", "Marketing"] as const;
-const STATUSES = ["Active", "Missing", "Disposed"] as const;
-const CONDITIONS = ["New", "Good", "Fair", "Needs R&M", "Damaged", "End of life"] as const;
+const CONDITIONS = ["New", "Good", "Fair", "Needs R&M", "Damaged", "End of life", "Missing", "Disposed"] as const;
 
 type Status =
   | { kind: "idle" }
@@ -37,7 +36,6 @@ export default function App() {
   const [description, setDescription] = useState("");
   const [barcode, setBarcode] = useState("");
   const [assetId, setAssetId] = useState("");
-  const [reportedStatus, setReportedStatus] = useState("");
   const [quantity, setQuantity] = useState("1");
   const [category, setCategory] = useState("");
   const [brand, setBrand] = useState("");
@@ -75,7 +73,6 @@ export default function App() {
           description: description.trim() || (photoFile ? "Photo report" : ""),
           barcode,
           assetId,
-          status: reportedStatus,
           quantity: quantity.trim() ? Number(quantity) : undefined,
           category,
           brand,
@@ -101,7 +98,6 @@ export default function App() {
       setDescription("");
       setBarcode("");
       setAssetId("");
-      setReportedStatus("");
       setQuantity("1");
       setCategory("");
       setBrand("");
@@ -120,6 +116,16 @@ export default function App() {
     <main>
       <h1>Report an asset</h1>
       <form onSubmit={handleSubmit}>
+        <label>
+          Start here: photo of the label or asset (optional)
+          <input
+            key={fileKey}
+            type="file"
+            accept="image/*"
+            onChange={(e) => setPhotoFile(e.target.files?.[0] ?? null)}
+          />
+        </label>
+
         <label>
           Your name
           <input value={reporterName} onChange={(e) => setReporterName(e.target.value)} />
@@ -183,16 +189,6 @@ export default function App() {
         )}
 
         <label>
-          Status (what you see)
-          <select value={reportedStatus} onChange={(e) => setReportedStatus(e.target.value)}>
-            <option value="">Select...</option>
-            {STATUSES.map((s) => (
-              <option key={s} value={s}>{s}</option>
-            ))}
-          </select>
-        </label>
-
-        <label>
           Condition
           <select value={condition} onChange={(e) => setCondition(e.target.value)}>
             <option value="">Select...</option>
@@ -210,15 +206,6 @@ export default function App() {
               <option key={d} value={d}>{d}</option>
             ))}
           </select>
-        </label>
-        <label>
-          Photo of the label or asset (optional)
-          <input
-            key={fileKey}
-            type="file"
-            accept="image/*"
-            onChange={(e) => setPhotoFile(e.target.files?.[0] ?? null)}
-          />
         </label>
         <button type="submit" disabled={status.kind === "sending"}>
           {status.kind === "sending" ? "Sending..." : "Send report"}

@@ -25,10 +25,7 @@ export type ReporterRole = (typeof ROLES)[number];
 export const DEPARTMENTS = ["Operations", "Finance", "Workshop", "IT", "Marketing"] as const;
 export type Department = (typeof DEPARTMENTS)[number];
 
-export const REPORTED_STATUSES = ["Active", "Missing", "Disposed"] as const;
-export type ReportedStatus = (typeof REPORTED_STATUSES)[number];
-
-export const CONDITIONS = ["New", "Good", "Fair", "Needs R&M", "Damaged", "End of life"] as const;
+export const CONDITIONS = ["New", "Good", "Fair", "Needs R&M", "Damaged", "End of life", "Missing", "Disposed"] as const;
 export type Condition = (typeof CONDITIONS)[number];
 
 export type ReportInput = {
@@ -39,7 +36,6 @@ export type ReportInput = {
   description: string;
   barcode?: string;
   assetId?: string;
-  status?: ReportedStatus;
   quantity?: number;
   category?: string;
   brand?: string;
@@ -65,7 +61,6 @@ export type ReviewItem = {
   model?: string;
   miscSpec?: string;
   quantity?: number;
-  reportedStatus?: string;
   condition?: string;
   department?: string;
   matchResult: string;

@@ -6,6 +6,12 @@ import { alertManagers } from "./notify";
 import { extractLabel } from "./extract";
 import type { LabelFields, Photo, ReportInput } from "./types";
 
+// "Bechtel, Welshpool" -> updates both fields. "Welshpool" alone -> updates both with the same text.
+function splitSite(site: string): { "Site: Company": string; "Site: Location": string } {
+  const [company, location] = site.includes(",") ? site.split(/,\s*/, 2) : [site, site];
+  return { "Site: Company": company, "Site: Location": location ?? company };
+}
+
 export type PipelineResult = {
   id: string;
   outcome: "verified" | "needs_review";
@@ -59,7 +65,7 @@ export async function processReport(input: ReportInput, photo?: Photo): Promise<
     await updateAsset(decision.asset.recordId, {
       "Last verified": new Date().toISOString(),
       "Last verified by": input.reporterName,
-      "Site": input.site,
+      ...splitSite(input.site),
       ...(decision.wasMissing ? { "Lifecycle status": "Active" } : {}),
     });
     await createEvent({

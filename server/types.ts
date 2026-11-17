@@ -6,13 +6,16 @@ export type Asset = {
   category: string;
   brand: string;
   model: string;
-  site: string;
+  siteCompany: string;
+  siteLocation: string;
   lifecycleStatus: LifecycleStatus;
   condition: Condition;
   barcode?: string;
   serial?: string;
   department?: string;
-  miscSpec?: string;
+  description?: string;
+  lastVerified?: string;
+  lastVerifiedBy?: string;
   };
 
 // below was added for second base: Asset Reports  

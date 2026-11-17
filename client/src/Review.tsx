@@ -5,7 +5,8 @@ type Asset = {
   category: string;
   brand: string;
   model: string;
-  site: string;
+  siteCompany: string; 
+  siteLocation: string;
   lifecycleStatus: string;
   department?: string;
   miscSpec?: string;
@@ -24,7 +25,7 @@ type Item = {
   category?: string;
   brand?: string;
   model?: string;
-  miscSpec?: string;
+  serial?: string;
   quantity?: number;
   condition?: string;
   department?: string;
@@ -76,7 +77,7 @@ function Card({ item, onDecide }: { item: Item; onDecide: (action: Action, note:
             <Row label="Category" value={item.category} />
             <Row label="Brand" value={item.brand} />
             <Row label="Model" value={item.model} />
-            <Row label="Misc spec" value={item.miscSpec} />
+            <Row label="Serial" value={item.serial} />
             <Row label="Quantity" value={item.quantity} />
             <Row label="Condition" value={item.condition} />
             <Row label="Department" value={item.department} />
@@ -90,7 +91,8 @@ function Card({ item, onDecide }: { item: Item; onDecide: (action: Action, note:
               <Row label="Category" value={a.category} />
               <Row label="Brand" value={a.brand} />
               <Row label="Model" value={a.model} />
-              <Row label="Site" value={a.site} />
+              <Row label="Client" value={a.siteCompany} />
+              <Row label="Location" value={a.siteLocation} />
               <Row label="Status" value={a.lifecycleStatus} />
               <Row label="Department" value={a.department} />
               <Row label="Misc spec" value={a.miscSpec} />

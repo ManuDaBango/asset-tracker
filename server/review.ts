@@ -1,6 +1,12 @@
 import { fetchAssets, fetchReviewQueue, updateAsset, updateReport, createEvent } from "./airtable";
 import { alertManagers } from "./notify";
 
+// "Bechtel, Welshpool" -> updates both fields. "Welshpool" alone -> updates both with the same text.
+function splitSite(site: string): { "Site: Company": string; "Site: Location": string } {
+  const [company, location] = site.includes(",") ? site.split(/,\s*/, 2) : [site, site];
+  return { "Site: Company": company, "Site: Location": location ?? company };
+}
+
 export type ReviewAction = "approve" | "reject";
 
 export type ReviewOutcome =
@@ -47,7 +53,7 @@ export async function resolveReview(
   await updateAsset(asset.recordId, {
     "Last verified": new Date().toISOString(),
     "Last verified by": item.reporterName,
-    "Site": item.site,
+    ...splitSite(item.site),
     ...(wasMissing ? { "Lifecycle status": "Active" } : {}),
   });
   await createEvent({

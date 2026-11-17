@@ -50,6 +50,7 @@ export function parseReportInput(body: unknown): ParseResult {
   const brand = optionalText(b.brand);
   const model = optionalText(b.model);
   const serial = optionalText(b.serial);
+  const reporterContact = optionalText(b.reporterContact);
 
   const department = optionalChoice(b.department, DEPARTMENTS);
   if (!department.ok) {
@@ -71,7 +72,7 @@ export function parseReportInput(body: unknown): ParseResult {
   return {
     ok: true,
     value: {
-      channel, reporterName, reporterRole, site, description,
+      channel, reporterName, reporterRole, site, description, reporterContact,
       barcode, assetId, quantity, category, brand, model, serial,
       department: department.value, condition: condition.value,
     },

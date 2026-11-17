@@ -36,6 +36,7 @@ function assetIdFromPath(): string {
 
 export default function App() {
   const [reporterName, setReporterName] = useState("");
+  const [reporterContact, setReporterContact] = useState("");
   const [reporterRole, setReporterRole] = useState<Role>("Employee");
   const [site, setSite] = useState("");
   const [description, setDescription] = useState("");
@@ -72,6 +73,7 @@ export default function App() {
         body: JSON.stringify({
           channel: "Web",
           reporterName,
+          reporterContact,
           reporterRole,
           site,
           description: description.trim() || (photoFile ? "Photo report" : ""),
@@ -101,6 +103,7 @@ export default function App() {
       // Tell the alt108 website (if it is showing this app in a frame) to refresh the register
       window.parent.postMessage({ type: "asset-report-submitted" }, "*");
       setDescription("");
+      setReporterContact("");
       setAssetId("");
       setQuantity("1");
       setCategory("");
@@ -145,6 +148,11 @@ export default function App() {
           <input value={reporterName} onChange={(e) => setReporterName(e.target.value)} />
         </label>
 
+        <label>
+          Mobile or email (for follow up)
+          <input value={reporterContact} onChange={(e) => setReporterContact(e.target.value)} />
+        </label>
+        
         <label>
           Your role
           <select value={reporterRole} onChange={(e) => setReporterRole(e.target.value as Role)}>

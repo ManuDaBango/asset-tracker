@@ -121,8 +121,9 @@ app.post("/api/review/:id/decision", requireReviewer, async (req, res) => {
   const action = req.body?.action;
   const reviewer = typeof req.body?.reviewer === "string" ? req.body.reviewer.trim() : "";
   const note = typeof req.body?.note === "string" ? req.body.note.trim() : "";
-  if (action !== "approve" && action !== "reject") {
-    res.status(400).json({ error: "action must be approve or reject" });
+  const newAssetId = typeof req.body?.newAssetId === "string" ? req.body.newAssetId : undefined;
+  if (action !== "approve" && action !== "reject" && action !== "approve_new") {
+    res.status(400).json({ error: "action must be approve, reject, or approve_new" });
     return;
   }
   if (!reviewer) {
@@ -130,7 +131,7 @@ app.post("/api/review/:id/decision", requireReviewer, async (req, res) => {
     return;
   }
   try {
-    const result = await resolveReview(String(req.params.id), action, reviewer, note);
+    const result = await resolveReview(String(req.params.id), action, reviewer, note, newAssetId);
     if (!result.ok) {
       res.status(result.status).json({ error: result.error });
       return;

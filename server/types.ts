@@ -44,7 +44,7 @@ export type ReportInput = {
   brand?: string;
   model?: string;
   serial?: string;
-  miscSpec?: string;
+  reporterContact?: string;
   department?: Department;
   condition?: Condition;
 };
@@ -64,7 +64,7 @@ export type ReviewItem = {
   brand?: string;
   model?: string;
   serial?: string;
-  miscSpec?: string;
+  reporterContact?: string;
   quantity?: number;
   condition?: string;
   department?: string;
@@ -76,7 +76,7 @@ export type ReviewItem = {
 };
 
 // below was added for third table: Events  
-export type EventType = "Sighting verified" | "Found (was Missing)" | "Sent to review" | "Report rejected";
+export type EventType = "Sighting verified" | "Found (was Missing)" | "Sent to review" | "Report rejected" | "Found unregistered";
 
 export type NewEvent = {
   type: EventType;

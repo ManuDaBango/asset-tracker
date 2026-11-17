@@ -88,6 +88,7 @@ export async function createReport(input: ReportInput, match: MatchResult, label
         "Barcode": input.barcode ?? "",
         ...(input.assetId ? { "Asset ID": input.assetId } : {}),
         ...(input.quantity !== undefined ? { "Quantity": input.quantity } : {}),
+        ...(input.reporterContact ? { "Reporter contact": input.reporterContact } : {}),
         ...(input.category ? { "Category": input.category } : {}),
         ...(input.brand ? { "Brand": input.brand } : {}),
         ...(input.model ? { "Model": input.model } : {}),
@@ -152,6 +153,11 @@ export async function createEvent(e: NewEvent): Promise<string> {
     fields["Asset"] = [e.assetRecordId];
   }
   const created = await airtableRequest("Events", "POST", fields);
+  return created.id;
+}
+
+export async function createAsset(fields: Record<string, unknown>): Promise<string> {
+  const created = await airtableRequest("Assets", "POST", fields);
   return created.id;
 }
 
@@ -236,6 +242,7 @@ function toReviewItem(record: AirtableRecord): ReviewItem {
     receivedAt: text("Received at"),
     channel: String(f["Channel"] ?? ""),
     reporterName: String(f["Reporter name"] ?? ""),
+    reporterContact: text("Reporter contact"),
     reporterRole: String(f["Reporter role"] ?? ""),
     site: String(f["Site"] ?? ""),
     description: String(f["Description"] ?? ""),

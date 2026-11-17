@@ -17,6 +17,7 @@ type Item = {
   receivedAt?: string;
   channel: string;
   reporterName: string;
+  reporterContact?: string;
   reporterRole: string;
   site: string;
   description: string;
@@ -47,8 +48,17 @@ function Row({ label, value }: { label: string; value?: string | number }) {
   );
 }
 
-function Card({ item, onDecide }: { item: Item; onDecide: (action: Action, note: string) => void }) {
+function Card({
+  item,
+  onDecide,
+  onDecideNew,
+}: {
+  item: Item;
+  onDecide: (action: Action, note: string) => void;
+  onDecideNew: (action: "approve_new", note: string, id: string) => void;
+}) {
   const [note, setNote] = useState("");
+  const [newId, setNewId] = useState("");
   const a = item.matchedAsset;
   const department = item.department ?? a?.department;
 
@@ -77,6 +87,7 @@ function Card({ item, onDecide }: { item: Item; onDecide: (action: Action, note:
             <Row label="Category" value={item.category} />
             <Row label="Brand" value={item.brand} />
             <Row label="Model" value={item.model} />
+            <Row label="Contact" value={item.reporterContact} />
             <Row label="Serial" value={item.serial} />
             <Row label="Quantity" value={item.quantity} />
             <Row label="Condition" value={item.condition} />
@@ -112,6 +123,20 @@ function Card({ item, onDecide }: { item: Item; onDecide: (action: Action, note:
       <button disabled={!a} onClick={() => onDecide("approve", note)}>
         {a ? `Approve: verify ${a.assetId}` : "Approve (needs a matched asset)"}
       </button>{" "}
+      {!a && (
+        <>
+          <label>
+            New asset ID
+            <input value={newId} onChange={(e) => setNewId(e.target.value)} />
+          </label>{" "}
+          <button
+            disabled={!newId.trim()}
+            onClick={() => onDecideNew("approve_new", note, newId.trim())}
+          >
+            Approve as new asset
+          </button>{" "}
+        </>
+      )}
       <button onClick={() => onDecide("reject", note)}>Reject</button>
     </section>
   );
@@ -140,7 +165,7 @@ export default function Review() {
     }
   }
 
-  async function decide(item: Item, action: Action, note: string) {
+  async function decide(item: Item, action: Action | "approve_new", note: string, newAssetId?: string) {
     if (!reviewer.trim()) {
       setMessage("Enter your name first");
       return;
@@ -149,7 +174,7 @@ export default function Review() {
       const response = await fetch(`/api/review/${item.recordId}/decision`, {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-review-passcode": passcode },
-        body: JSON.stringify({ action, reviewer, note }),
+        body: JSON.stringify({ action, reviewer, note, newAssetId }),
       });
       const data = await response.json();
       if (response.ok) await load();
@@ -175,7 +200,12 @@ export default function Review() {
 
       {items && items.length === 0 && <p>Nothing waiting for review.</p>}
       {items?.map((item) => (
-        <Card key={item.recordId} item={item} onDecide={(action, note) => decide(item, action, note)} />
+        <Card
+          key={item.recordId}
+          item={item}
+          onDecide={(action, note) => decide(item, action, note)}
+          onDecideNew={(action, note, id) => decide(item, action, note, id)}
+        />
       ))}
     </main>
   );

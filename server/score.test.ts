@@ -9,7 +9,8 @@ const laptop: Asset = {
   category: "Laptop",
   brand: "Dell",
   model: "Latitude 5520",
-  site: "Perth Depot",
+  siteCompany: "Perth Depot",
+  siteLocation: "Perth Depot",
   lifecycleStatus: "Active",
   condition: "Good",
 };

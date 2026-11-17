@@ -43,6 +43,7 @@ export type ReportInput = {
   category?: string;
   brand?: string;
   model?: string;
+  serial?: string;
   miscSpec?: string;
   department?: Department;
   condition?: Condition;
@@ -62,6 +63,7 @@ export type ReviewItem = {
   category?: string;
   brand?: string;
   model?: string;
+  serial?: string;
   miscSpec?: string;
   quantity?: number;
   condition?: string;

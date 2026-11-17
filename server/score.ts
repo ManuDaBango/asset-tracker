@@ -6,11 +6,11 @@ export type Evidence = {
   brand?: string;
   model?: string;
   category?: string;
-  site?: string;
+  siteLocation?: string;
 };
 
 // How much each clue matters. Model is the most distinctive.
-const WEIGHTS = { model: 0.5, brand: 0.2, category: 0.15, site: 0.15 } as const;
+const WEIGHTS = { model: 0.5, brand: 0.2, category: 0.15, siteLocation: 0.15 } as const;
 type Field = keyof typeof WEIGHTS;
 
 // Like similarity(), but "Dell" vs "Dell Inc" counts as a perfect match.

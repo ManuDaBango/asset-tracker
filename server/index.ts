@@ -141,7 +141,11 @@ app.post("/telegram/webhook", async (req, res) => {
 
 // Serve the built form and review page. Created by `npm run build`.
 app.use(express.static(path.join(process.cwd(), "client", "dist")));
-
+// A label link looks like /a/AST-000123. It isn't a real file, so send the form page.
+// The page reads the ID from the address.
+app.get("/a/:assetId", (req, res) => {
+  res.sendFile(path.join(process.cwd(), "client", "dist", "index.html"));
+});
 const port = Number(process.env.PORT) || 3000;
 app.listen(port, () => {
   console.log(`Listening on http://localhost:${port}`);

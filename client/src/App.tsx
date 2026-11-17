@@ -28,19 +28,23 @@ async function shrinkImage(file: File): Promise<{ mediaType: "image/jpeg"; base6
   return { mediaType: "image/jpeg", base64: dataUrl.split(",")[1] };
 }
 
+// Reads the ID from an address like /a/AST-000123. Returns "" if there isn't one.
+function assetIdFromPath(): string {
+  const match = window.location.pathname.match(/^\/a\/([^/]+)/);
+  return match ? decodeURIComponent(match[1]) : "";
+}
 
 export default function App() {
   const [reporterName, setReporterName] = useState("");
   const [reporterRole, setReporterRole] = useState<Role>("Employee");
   const [site, setSite] = useState("");
   const [description, setDescription] = useState("");
-  const [barcode, setBarcode] = useState("");
-  const [assetId, setAssetId] = useState("");
+  const [assetId, setAssetId] = useState(assetIdFromPath);
   const [quantity, setQuantity] = useState("1");
   const [category, setCategory] = useState("");
   const [brand, setBrand] = useState("");
   const [model, setModel] = useState("");
-  const [miscSpec, setMiscSpec] = useState("");
+  const [serial, setSerial] = useState("");
   const [department, setDepartment] = useState("");
   const [condition, setCondition] = useState("");
   const [status, setStatus] = useState<Status>({ kind: "idle" });
@@ -71,13 +75,12 @@ export default function App() {
           reporterRole,
           site,
           description: description.trim() || (photoFile ? "Photo report" : ""),
-          barcode,
           assetId,
           quantity: quantity.trim() ? Number(quantity) : undefined,
           category,
           brand,
           model,
-          miscSpec,
+          serial,
           department,
           condition,
           photo,
@@ -98,13 +101,12 @@ export default function App() {
       // Tell the alt108 website (if it is showing this app in a frame) to refresh the register
       window.parent.postMessage({ type: "asset-report-submitted" }, "*");
       setDescription("");
-      setBarcode("");
       setAssetId("");
       setQuantity("1");
       setCategory("");
       setBrand("");
       setModel("");
-      setMiscSpec("");
+      setSerial("");
       setDepartment("");
       setCondition("");
       setPhotoFile(null);
@@ -116,8 +118,18 @@ export default function App() {
 
   return (
     <main>
-      <h1>Report an asset</h1>
-      <form onSubmit={handleSubmit}>
+      <header className="page-header">
+        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 4H8a4 4 0 0 0-4 4v12l20.6 20.6a4 4 0 0 0 5.65 0l9.95-9.95a4 4 0 0 0 0-5.65L20 4Z" stroke="#0d9488" strokeWidth="3" strokeLinejoin="round"/>
+          <circle cx="14" cy="14" r="3" fill="#0d9488"/>
+          <path d="M16 30l6 6 10-10" stroke="#c2410c" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+        <div>
+          <h1>Report an asset</h1>
+          <p>Spot it, scan it, sorted — takes under a minute.</p>
+        </div>
+      </header>
+      <form className="form-card" onSubmit={handleSubmit}>
         <label>
           Start here: photo of the label or asset (optional)
           <input
@@ -143,13 +155,8 @@ export default function App() {
         </label>
 
         <label>
-          Site
+          Site (Client, Branch, Suburb etc)
           <input value={site} onChange={(e) => setSite(e.target.value)} />
-        </label>
-
-        <label>
-          Barcode (optional)
-          <input value={barcode} onChange={(e) => setBarcode(e.target.value)} />
         </label>
 
         <label>
@@ -162,25 +169,29 @@ export default function App() {
           <input value={category} onChange={(e) => setCategory(e.target.value)} />
         </label>
 
-        <label>
-          Asset you are reporting
-          <textarea rows={4} value={description} onChange={(e) => setDescription(e.target.value)} />
-        </label>
+        <fieldset className="describe-asset">
+          <legend>Describe the Asset</legend>
 
-        <label>
-          Brand (optional)
-          <input value={brand} onChange={(e) => setBrand(e.target.value)} />
-        </label>
+          <label>
+            Brand (optional)
+            <input value={brand} onChange={(e) => setBrand(e.target.value)} />
+          </label>
 
-        <label>
-          Model (optional)
-          <input value={model} onChange={(e) => setModel(e.target.value)} />
-        </label>
+          <label>
+            Model (optional)
+            <input value={model} onChange={(e) => setModel(e.target.value)} />
+          </label>
 
-        <label>
-          Misc spec (optional): colour, lid type, wheels, anything else that identifies it
-          <textarea rows={3} value={miscSpec} onChange={(e) => setMiscSpec(e.target.value)} />
-        </label>
+          <label>
+            Serial number (optional, from the manufacturer's tag)
+            <input value={serial} onChange={(e) => setSerial(e.target.value)} />
+          </label>
+
+          <label>
+            Description (detailed): size, colour, fittings, condition — anything that tells it apart from a similar one
+            <textarea rows={4} value={description} onChange={(e) => setDescription(e.target.value)} />
+          </label>
+        </fieldset>
 
         <label>
           Quantity

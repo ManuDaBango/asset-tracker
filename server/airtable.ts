@@ -23,20 +23,30 @@ function getConfig() {
 
 export async function fetchAssets(): Promise<Asset[]> {
   const { baseId, token } = getConfig();
-  
-  const url = `https://api.airtable.com/v0/${baseId}/Assets`;
-  console.log("Calling:", url);
-  const response = await fetch(url, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const records: AirtableRecord[] = [];
+  let offset: string | undefined;
 
-  if (!response.ok) {
-    throw new Error(`Airtable said ${response.status}: ${await response.text()}`);
-  }
+  // Keep asking for the next page until Airtable stops sending an offset.
+  do {
+    const params = new URLSearchParams();
+    if (offset) params.set("offset", offset);
+    const url = `https://api.airtable.com/v0/${baseId}/Assets?${params.toString()}`;
 
-  const data = (await response.json()) as AirtableListResponse;
-  return data.records.map(toAsset);
+    const response = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!response.ok) {
+      throw new Error(`Airtable said ${response.status}: ${await response.text()}`);
+    }
+
+    const data = (await response.json()) as AirtableListResponse & { offset?: string };
+    records.push(...data.records);
+    offset = data.offset;
+  } while (offset);
+
+  return records.map(toAsset);
 }
+
 
 function toAsset(record: AirtableRecord): Asset {
   const f = record.fields;

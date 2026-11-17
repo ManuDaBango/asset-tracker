@@ -66,6 +66,31 @@ app.post("/api/reports", reportLimiter, async (req, res) => {
   }
 });
 
+// Auditor Review
+function requireAuditor(req: express.Request, res: express.Response, next: express.NextFunction) {
+  const expected = process.env.AUDIT_PASSCODE;
+  if (!expected || req.header("x-audit-passcode") !== expected) {
+    res.status(401).json({ error: "Wrong or missing passcode" });
+    return;
+  }
+  next();
+}
+
+app.get("/api/audit", requireAuditor, async (req, res) => {
+  const wanted = String(req.query.site ?? "").trim().toLowerCase();
+  if (!wanted) {
+    res.status(400).json({ error: "Add ?site=CompanyName to the address" });
+    return;
+  }
+  try {
+    const assets = await fetchAssets();
+    res.json(assets.filter((a) => a.siteCompany.trim().toLowerCase() === wanted));
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Could not load assets for that site" });
+  }
+});
+
 // Reviewer pages need a shared passcode. Demo-grade protection until real logins arrive in Step 11.
 // If REVIEW_PASSCODE is not set, nobody gets in: failing closed is safer than failing open.
 function requireReviewer(req: express.Request, res: express.Response, next: express.NextFunction) {

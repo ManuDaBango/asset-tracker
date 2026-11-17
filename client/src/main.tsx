@@ -3,9 +3,11 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 import Review from './Review.tsx'
+import AuditView from './AuditView.tsx'
 
-// The address ending in #/review shows the reviewer page. Anything else shows the form.
-const Page = window.location.hash === "#/review" ? Review : App;
+// #/review shows the Manager screen, #/audit shows the Auditor screen, anything else shows the report form.
+const hash = window.location.hash;
+const Page = hash === "#/review" ? Review : hash === "#/audit" ? AuditView : App;
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
